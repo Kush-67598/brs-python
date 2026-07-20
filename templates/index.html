@@ -84,12 +84,15 @@
   <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
     <div class="flex items-baseline gap-2">
       <span class="font-display text-2xl font-semibold tracking-tight">Stackline</span>
+      <span class="text-[10px] tracking-[0.2em] uppercase text-[var(--gold-soft)]">Vol. 03</span>
     </div>
-    <nav class="hidden md:flex items-center gap-8 text-xs tracking-[0.15em] uppercase">
+    <nav class="flex items-center gap-4 sm:gap-8 text-[10px] sm:text-xs tracking-[0.1em] sm:tracking-[0.15em] uppercase">
       <a href="#top50" class="hover:text-[var(--gold-soft)] transition-colors">Top 50</a>
       <a href="#recommend" class="hover:text-[var(--gold-soft)] transition-colors">Get a Pick</a>
     </nav>
-    
+    <button class="border border-[var(--gold)] text-[var(--gold-soft)] text-xs uppercase tracking-widest px-4 py-2 hover:bg-[var(--gold)] hover:text-[var(--ink)] transition-colors">
+      Sign In
+    </button>
   </div>
 </header>
 
@@ -125,8 +128,11 @@
   <div class="flex items-end justify-between mb-10 flex-wrap gap-4">
     <div>
       <p class="text-xs uppercase tracking-[0.3em] text-[var(--gold-soft)] mb-2">Community Ranked</p>
+      <h2 class="font-display text-4xl font-semibold">Top 50 — All Time</h2>
     </div>
     <div class="flex gap-2 text-xs uppercase tracking-widest">
+      <button class="tab-active px-4 py-2">This Month</button>
+      <button class="px-4 py-2 text-[var(--parchment)]/60 hover:text-[var(--parchment)] transition-colors">All Time</button>
     </div>
   </div>
 
@@ -134,10 +140,10 @@
 
 {% for i in range(book_name|length) %}
 
-<div class="catalog-card group flex items-center gap-6 py-4 border-b border-[var(--parchment)]/10 hover:bg-[var(--parchment)]/5 transition-colors px-2">
+<div class="catalog-card group flex items-center gap-3 sm:gap-6 py-4 border-b border-[var(--parchment)]/10 hover:bg-[var(--parchment)]/5 transition-colors px-2">
 
     <!-- Rank -->
-    <span class="spine-num font-display text-3xl w-12 text-[var(--gold)]/70 transition-all">
+    <span class="spine-num font-display text-xl sm:text-3xl w-8 sm:w-12 shrink-0 text-[var(--gold)]/70 transition-all">
         {{ "%02d"|format(i+1) }}
     </span>
 
@@ -145,27 +151,32 @@
     <img
         src="{{ image[i] }}"
         alt="{{ book_name[i] }}"
-        class="w-11 h-16 object-cover rounded shrink-0"
+        class="w-9 h-14 sm:w-11 sm:h-16 object-cover rounded shrink-0"
     >
 
     <!-- Book Details -->
     <div class="flex-1 min-w-0">
-        <p class="font-display text-lg leading-tight truncate">
+        <p class="font-display text-sm sm:text-lg leading-tight truncate">
             {{ book_name[i] }}
         </p>
 
-        <p class="text-xs text-[var(--parchment)]/50 mt-1">
+        <p class="text-[10px] sm:text-xs text-[var(--parchment)]/50 mt-1 truncate">
             {{ author[i] }}
+        </p>
+
+        <!-- rating shown inline on mobile only -->
+        <p class="sm:hidden text-[10px] text-[var(--gold-soft)] mt-1">
+            ⭐ {{ "%.2f"|format(rating[i]) }} · {{ votes[i] }} votes
         </p>
     </div>
 
     <!-- Rating -->
-    <div class="hidden sm:flex items-center gap-1 text-[var(--gold-soft)]">
+    <div class="hidden sm:flex items-center gap-1 text-[var(--gold-soft)] shrink-0">
         ⭐ {{ "%.2f"|format(rating[i]) }}
     </div>
 
     <!-- Votes -->
-    <span class="text-xs text-[var(--parchment)]/50 w-20 text-right">
+    <span class="hidden sm:block text-xs text-[var(--parchment)]/50 w-20 text-right shrink-0">
         {{ votes[i] }} votes
     </span>
 
@@ -175,7 +186,9 @@
 
 </div>
 
- 
+  <button class="mt-8 w-full border border-dashed border-[var(--parchment)]/25 py-4 text-xs uppercase tracking-widest text-[var(--parchment)]/60 hover:text-[var(--gold-soft)] hover:border-[var(--gold)] transition-colors">
+    Show all 50 →
+  </button>
 </section>
 
 
@@ -184,7 +197,7 @@
 <section id="recommend" class="border-t border-[var(--parchment)]/10 bg-[var(--ink-soft)]">
   <div class="max-w-3xl mx-auto px-6 py-24 text-center">
     <p class="text-xs uppercase tracking-[0.3em] text-[var(--gold-soft)] mb-4">The Reference Desk</p>
-    <h2 class="font-display text-4xl md:text-5xl font-semibold leading-tight">
+    <h2 class="font-display text-3xl sm:text-4xl md:text-5xl font-semibold leading-tight">
       Tell us what you just closed.<br>We'll find what's next.
     </h2>
     <p class="mt-5 text-sm text-[var(--parchment)]/60 max-w-md mx-auto">
@@ -264,17 +277,16 @@ function renderResults(books, sourceTitle){
 
   books.forEach((book, idx) => {
     const card = document.createElement('div');
-    card.className = 'rec-card bg-[var(--card)] border border-[var(--parchment)]/10 p-6 flex gap-6 items-center';
+    card.className = 'rec-card bg-[var(--card)] border border-[var(--parchment)]/10 p-4 sm:p-6 flex gap-4 sm:gap-6 items-center';
     card.style.animationDelay = (idx * 0.08) + 's';
 
     card.innerHTML = `
-      <img src="${book.image}" alt="${book.title}" class="w-16 h-24 object-cover shrink-0 bg-[var(--spine-blue)]">
+      <img src="${book.image}" alt="${book.title}" class="w-12 h-18 sm:w-16 sm:h-24 object-cover shrink-0 bg-[var(--spine-blue)]">
       <div class="flex-1 min-w-0">
-        <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--gold-soft)] mb-1">Because you read ${sourceTitle}</p>
-        <p class="font-display text-xl truncate">${book.title}</p>
-        <p class="text-xs text-[var(--parchment)]/50 mt-1">${book.author}</p>
+        <p class="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] text-[var(--gold-soft)] mb-1 truncate">Because you read ${sourceTitle}</p>
+        <p class="font-display text-base sm:text-xl truncate">${book.title}</p>
+        <p class="text-[11px] sm:text-xs text-[var(--parchment)]/50 mt-1 truncate">${book.author}</p>
       </div>
-      
     `;
     resultsEl.appendChild(card);
   });
