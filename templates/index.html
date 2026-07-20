@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stackline — Collaborative Book Rankings</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#141313;
+    --ink-soft:#2a2826;
+    --card:#3d3a35;
+    --parchment:#efe8d8;
+    --gold:#c9a227;
+    --gold-soft:#e0c15a;
+    --spine-red:#8a3324;
+    --spine-green:#2f4a3a;
+    --spine-blue:#2b3f5c;
+  }
+  body{ background:var(--ink); font-family:'Space Mono', monospace; }
+  .font-display{ font-family:'Fraunces', serif; }
+  ::selection{ background:var(--gold); color:var(--ink); }
+
+  .spine{
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  .ledger-line{
+    background-image: repeating-linear-gradient(to bottom, transparent, transparent 34px, rgba(239,232,216,0.08) 34px, rgba(239,232,216,0.08) 35px);
+  }
+
+  .tab-active{
+    background:var(--parchment);
+    color:var(--ink);
+  }
+
+  .catalog-card:hover .spine-num{
+    transform: translateX(4px);
+    color: var(--gold-soft);
+  }
+
+  .grain{
+    background-image: radial-gradient(rgba(239,232,216,0.035) 1px, transparent 1px);
+    background-size: 3px 3px;
+  }
+
+  input:focus{ outline:none; }
+
+  .rec-card{
+    opacity: 0;
+    transform: translateY(8px);
+    animation: recFadeIn 0.4s ease forwards;
+  }
+
+  @keyframes recFadeIn{
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .spinner{
+    border: 2px solid rgba(239,232,216,0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin{
+    to{ transform: rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+</style>
+</head>
+<body class="text-[var(--parchment)] grain">
+
+<!-- NAV -->
+<header class="sticky top-0 z-50 backdrop-blur bg-[var(--ink)]/90 border-b border-[var(--parchment)]/10">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-baseline gap-2">
+      <span class="font-display text-2xl font-semibold tracking-tight">Stackline</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-8 text-xs tracking-[0.15em] uppercase">
+      <a href="#top50" class="hover:text-[var(--gold-soft)] transition-colors">Top 50</a>
+      <a href="#recommend" class="hover:text-[var(--gold-soft)] transition-colors">Get a Pick</a>
+    </nav>
+    
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="max-w-6xl mx-auto px-6 pt-20 pb-24 grid md:grid-cols-[1.3fr_1fr] gap-12 items-end">
+  <div>
+    <p class="text-xs uppercase tracking-[0.3em] text-[var(--gold-soft)] mb-5">A ranked, reader-built shelf</p>
+    <h1 class="font-display text-5xl md:text-7xl leading-[0.95] font-semibold">
+      Every book<br>earns its<br><span class="italic text-[var(--gold-soft)]">place on the shelf.</span>
+    </h1>
+    <p class="mt-8 max-w-md text-sm leading-relaxed text-[var(--parchment)]/70">
+      No algorithm decides the ranking here — readers do. Vote, argue, and rebuild the lists together. Then tell us what you just finished, and we'll hand you what's next.
+    </p>
+    <div class="mt-8 flex gap-4">
+      <a href="#top50" class="bg-[var(--gold)] text-[var(--ink)] text-xs uppercase tracking-widest font-bold px-6 py-3 hover:bg-[var(--gold-soft)] transition-colors">Browse the Lists</a>
+      <a href="#recommend" class="border border-[var(--parchment)]/30 text-xs uppercase tracking-widest px-6 py-3 hover:border-[var(--gold-soft)] hover:text-[var(--gold-soft)] transition-colors">Get Recommended</a>
+    </div>
+  </div>
+
+  <!-- bookshelf hero graphic -->
+  <div class="flex items-end gap-1.5 h-64 border-b-4 border-[var(--gold)]/40 pb-0">
+    <div class="spine h-[85%] w-9 bg-[var(--spine-red)] flex items-center justify-center text-[10px] tracking-widest uppercase py-3 text-[var(--parchment)]/90">Fiction</div>
+    <div class="spine h-[95%] w-8 bg-[var(--spine-green)] flex items-center justify-center text-[10px] tracking-widest uppercase py-3 text-[var(--parchment)]/90">Sci-Fi</div>
+    <div class="spine h-[70%] w-10 bg-[var(--gold)] flex items-center justify-center text-[10px] tracking-widest uppercase py-3 text-[var(--ink)] font-bold">Essays</div>
+    <div class="spine h-[100%] w-7 bg-[var(--spine-blue)] flex items-center justify-center text-[10px] tracking-widest uppercase py-3 text-[var(--parchment)]/90">Memoir</div>
+    <div class="spine h-[78%] w-9 bg-[var(--card)] flex items-center justify-center text-[10px] tracking-widest uppercase py-3 text-[var(--parchment)]/90">Poetry</div>
+    <div class="spine h-[90%] w-8 bg-[var(--spine-red)]/80 flex items-center justify-center text-[10px] tracking-widest uppercase py-3 text-[var(--parchment)]/90">Horror</div>
+  </div>
+</section>
+
+<!-- TOP 50 -->
+<section id="top50" class="max-w-6xl mx-auto px-6 py-16 border-t border-[var(--parchment)]/10 ledger-line">
+  <div class="flex items-end justify-between mb-10 flex-wrap gap-4">
+    <div>
+      <p class="text-xs uppercase tracking-[0.3em] text-[var(--gold-soft)] mb-2">Community Ranked</p>
+    </div>
+    <div class="flex gap-2 text-xs uppercase tracking-widest">
+    </div>
+  </div>
+
+  <div class="grid gap-0">
+
+{% for i in range(book_name|length) %}
+
+<div class="catalog-card group flex items-center gap-6 py-4 border-b border-[var(--parchment)]/10 hover:bg-[var(--parchment)]/5 transition-colors px-2">
+
+    <!-- Rank -->
+    <span class="spine-num font-display text-3xl w-12 text-[var(--gold)]/70 transition-all">
+        {{ "%02d"|format(i+1) }}
+    </span>
+
+    <!-- Book Cover -->
+    <img
+        src="{{ image[i] }}"
+        alt="{{ book_name[i] }}"
+        class="w-11 h-16 object-cover rounded shrink-0"
+    >
+
+    <!-- Book Details -->
+    <div class="flex-1 min-w-0">
+        <p class="font-display text-lg leading-tight truncate">
+            {{ book_name[i] }}
+        </p>
+
+        <p class="text-xs text-[var(--parchment)]/50 mt-1">
+            {{ author[i] }}
+        </p>
+    </div>
+
+    <!-- Rating -->
+    <div class="hidden sm:flex items-center gap-1 text-[var(--gold-soft)]">
+        ⭐ {{ "%.2f"|format(rating[i]) }}
+    </div>
+
+    <!-- Votes -->
+    <span class="text-xs text-[var(--parchment)]/50 w-20 text-right">
+        {{ votes[i] }} votes
+    </span>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+ 
+</section>
+
+
+
+<!-- RECOMMEND -->
+<section id="recommend" class="border-t border-[var(--parchment)]/10 bg-[var(--ink-soft)]">
+  <div class="max-w-3xl mx-auto px-6 py-24 text-center">
+    <p class="text-xs uppercase tracking-[0.3em] text-[var(--gold-soft)] mb-4">The Reference Desk</p>
+    <h2 class="font-display text-4xl md:text-5xl font-semibold leading-tight">
+      Tell us what you just closed.<br>We'll find what's next.
+    </h2>
+    <p class="mt-5 text-sm text-[var(--parchment)]/60 max-w-md mx-auto">
+      Type a title you loved, exactly as it appears in our catalog. We'll pull five from the shelf that match its pulse.
+    </p>
+
+    <form id="recommend-form" class="mt-10 flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+      <div class="flex-1 flex items-center gap-3 bg-[var(--parchment)] px-4 py-3.5">
+        <span class="text-[var(--ink)]/40 font-display italic">＂</span>
+        <input
+          id="book-input"
+          type="text"
+          placeholder="e.g. The Night Circus"
+          class="bg-transparent flex-1 text-[var(--ink)] placeholder:text-[var(--ink)]/40 text-sm"
+          autocomplete="off"
+        >
+      </div>
+      <button
+        id="recommend-btn"
+        type="submit"
+        class="bg-[var(--gold)] text-[var(--ink)] text-xs uppercase tracking-widest font-bold px-8 py-3.5 hover:bg-[var(--gold-soft)] transition-colors whitespace-nowrap flex items-center justify-center gap-2"
+      >
+        <span id="btn-label">Recommend</span>
+        <span id="btn-spinner" class="spinner hidden"></span>
+      </button>
+    </form>
+
+    <!-- status / error -->
+    <p id="rec-status" class="mt-4 text-xs text-[var(--parchment)]/50 hidden"></p>
+
+    <!-- results -->
+    <div id="rec-results" class="mt-14 grid gap-4 text-left"></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-[var(--parchment)]/10">
+  <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <span class="font-display text-lg">Stackline</span>
+    <p class="text-xs text-[var(--parchment)]/40 tracking-wide">Built by readers, ranked by readers.</p>
+  </div>
+</footer>
+
+<script>
+const form = document.getElementById('recommend-form');
+const input = document.getElementById('book-input');
+const resultsEl = document.getElementById('rec-results');
+const statusEl = document.getElementById('rec-status');
+const btn = document.getElementById('recommend-btn');
+const btnLabel = document.getElementById('btn-label');
+const btnSpinner = document.getElementById('btn-spinner');
+
+function setLoading(isLoading){
+  btn.disabled = isLoading;
+  btnLabel.textContent = isLoading ? 'Searching…' : 'Recommend';
+  btnSpinner.classList.toggle('hidden', !isLoading);
+}
+
+function showStatus(msg, isError){
+  statusEl.textContent = msg;
+  statusEl.classList.remove('hidden');
+  statusEl.style.color = isError ? '#c96a4f' : '';
+}
+
+function clearStatus(){
+  statusEl.classList.add('hidden');
+  statusEl.textContent = '';
+}
+
+function renderResults(books, sourceTitle){
+  resultsEl.innerHTML = '';
+
+  if (books.length === 0){
+    showStatus('No matches found for that title.', true);
+    return;
+  }
+
+  books.forEach((book, idx) => {
+    const card = document.createElement('div');
+    card.className = 'rec-card bg-[var(--card)] border border-[var(--parchment)]/10 p-6 flex gap-6 items-center';
+    card.style.animationDelay = (idx * 0.08) + 's';
+
+    card.innerHTML = `
+      <img src="${book.image}" alt="${book.title}" class="w-16 h-24 object-cover shrink-0 bg-[var(--spine-blue)]">
+      <div class="flex-1 min-w-0">
+        <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--gold-soft)] mb-1">Because you read ${sourceTitle}</p>
+        <p class="font-display text-xl truncate">${book.title}</p>
+        <p class="text-xs text-[var(--parchment)]/50 mt-1">${book.author}</p>
+      </div>
+      
+    `;
+    resultsEl.appendChild(card);
+  });
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const bookName = input.value.trim();
+  clearStatus();
+  resultsEl.innerHTML = '';
+
+  if (!bookName){
+    showStatus('Type a book title first.', true);
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const res = await fetch('/recommend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ book_name: bookName })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok){
+      showStatus(data.error || 'Something went wrong.', true);
+      return;
+    }
+
+    renderResults(data.results, bookName);
+  } catch (err){
+    showStatus('Could not reach the server. Is Flask running?', true);
+  } finally {
+    setLoading(false);
+  }
+});
+</script>
+
+</body>
+</html>
